@@ -269,7 +269,7 @@ SEN, the instrisics and extrinsics of the camera.
     "fcn": "ack",
     "call": "get_cam_cal",
     "id": "<replier id>",
-    "intrisics": {
+    "intrinsics": {
       "camera_matrix": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       "dist_coeff": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
     },

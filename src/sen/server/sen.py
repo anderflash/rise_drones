@@ -78,12 +78,14 @@ class Server:
     # Functions in same order as documentation
     self._commands = {'heart_beat':         {'request': self._request_heart_beat,         'task': None},
                       'get_info':           {'request': self._request_get_info,           'task': None},
+                      'get_cam_cal':        {'request': self._request_get_cam_cal,        'task': None},
                       'who_controls':       {'request': self._request_who_controls,       'task': None},
                       'get_owner':          {'request': self._request_get_owner,          'task': None},
                       'set_owner':          {'request': self._request_set_owner,          'task': None},
                       'get_idle':           {'request': self._request_get_idle,           'task': None},
                       'get_pose':           {'request': self._request_get_pose,           'task': None},
                       'set_pose':           {'request': self._request_set_pose,           'task': None},
+                      'clear_pose':         {'request': self._request_clear_pose,         'task': None},
                       'set_gimbal':         {'request': self._request_set_gimbal,         'task': None},
                       'cv_algorithm':       {'request': self._request_cv_argorithm,       'task': self._task_cv_algorithm, 'priority': 1},
                       'test_get_focus':     {'request': self._request_test_get_focus,     'task': None},
@@ -188,6 +190,29 @@ class Server:
     # No nack reasons, accept
     answer = dss.auxiliaries.zmq.ack(fcn, {'info_pub_port': self._pub_socket.port, 'data_pub_port': '', 'id': self._sen_id})
     return answer
+
+  def _request_get_cam_cal(self, msg) -> dict:
+    fcn = dss.auxiliaries.zmq.get_fcn(msg)
+    # Test nack reasons
+    try:
+      # Look for empty config file
+      if not all(values == 0 for values in config['intrisics']['camera_matrix']):
+        # accept
+        pass
+      else:
+        # Nack, camera matrix is all 0
+        answer = dss.auxiliaries.zmq.nack(fcn, desc='Calibration not available')
+        return answer
+    except:
+      # Nack, configfile not set up
+        answer = dss.auxiliaries.zmq.nack(fcn, desc='Calibration not available')
+        return answer
+    # Accept
+    answer = dss.auxiliaries.zmq.ack(fcn, {'id': self._sen_id})
+    answer['intrinsics'] = config['intrinsics']
+    answer['extrinsics'] = config['extrinsics']
+    return answer
+
 
   def _request_who_controls(self, msg) -> dict:
     fcn = dss.auxiliaries.zmq.get_fcn(msg)

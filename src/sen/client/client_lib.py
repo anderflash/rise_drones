@@ -258,6 +258,10 @@ class Client:
     # Return name as a string
     return answer['name']
 
+  def get_cam_cal(self):
+    answer = self._sen.get_cam_cal()
+    return answer
+
   # Enable data stream
   def enable_data_stream(self, stream):
     self._sen.data_stream(stream=stream, enable=True)
