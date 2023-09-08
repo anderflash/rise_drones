@@ -212,8 +212,8 @@ The SEN responds to the ``heart_beat`` function call with an ack.
 
   .. _fcnsengetinfo:
 
-Fcn: get_info
-~~~~~~~~~~~~~
+Fcn: ``get_info``
+~~~~~~~~~~~~~~~~~
 
 
 The function ``get_info`` requests connection information from the SEN.
@@ -242,6 +242,46 @@ The SEN answers with an ack and the applicable information.
 
 **Nack reasons:**
   - None
+
+  .. _fcnsenget_cam_calib:
+
+Fcn: ``get_cam_cal``
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+The function ``get_cam_cal`` requests static calibration information from the
+SEN, the instrisics and extrinsics of the camera.
+
+.. code-block:: json
+  :caption: Function call: ``get_cam_cal``
+  :linenos:
+
+  {
+    "fcn": "get_cam_cal",
+    "id": "<requestor id>"
+  }
+
+.. code-block:: json
+  :caption: Reply: ``get_cam_cal``
+  :linenos:
+
+  {
+    "fcn": "ack",
+    "call": "get_cam_cal",
+    "id": "<replier id>",
+    "intrisics": {
+      "camera_matrix": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      "dist_coeff": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    },
+    "extrinsics": {
+      "rvec": [0.0, 0.0, 0.0],
+      "tvec": [0.0, 0.0, 0.0]
+    }
+  }
+
+**Nack reasons:**
+  - Calibration not available
+
 
 .. _fcnsenwhocontrols:
 
@@ -384,7 +424,7 @@ running or media is beeing streamed for example, otherwise true.
 .. _fcnsengetpose:
 
 Fcn: ``get_pose``
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 .. compatibility:: badge
   :py-client: -
 
@@ -456,7 +496,38 @@ north].
   }
 
 **Nack reasons:**
-  - None
+  - Requestor is not the SEN owner
+
+  .. _fcnsenclearpose:
+
+Fcn: ``clear_pose``
+~~~~~~~~~~~~~~~~~~~
+
+
+The function ``clear_pose`` requests to clear the pose information of the SEN. If
+ack the sensor clears the camera pose. The previous camera pose is permanently deleted.
+
+.. code-block:: json
+  :caption: Function call: ``clear_pose``
+  :linenos:
+
+  {
+    "fcn": "clear_pose",
+    "id": "<requestor id>"
+  }
+
+.. code-block:: json
+  :caption: Reply: ``clear_pose``
+  :linenos:
+
+  {
+    "fcn": "ack",
+    "call": "clear_pose",
+    "id": "<replier id>"
+  }
+
+**Nack reasons:**
+  - Requester is not the SEN owner
 
 
 .. _fcnsenetgimbal:
@@ -489,6 +560,7 @@ the gimbal in use will just be ignored.
   - Requester is not the SEN owner
   - Application is not in controls
   - Roll, pitch or yaw is out of range for the gimbal
+  - Not capable
 
 
 .. _fcncvalgorithm:
