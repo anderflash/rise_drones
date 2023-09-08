@@ -213,7 +213,6 @@ class Server:
     answer['extrinsics'] = config['extrinsics']
     return answer
 
-
   def _request_who_controls(self, msg) -> dict:
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
     # No nack reasons, accept
@@ -251,18 +250,32 @@ class Server:
   def _request_get_pose(self, msg):
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
     # No nack reasons, accept
-    answer = dss.auxiliaries.zmq.ack(fcn, {'idle': self._task_event.is_set()})
+    answer = dss.auxiliaries.zmq.ack(fcn, {'TBD': "Not implemented"})
     # But not implementede so nack
     answer = dss.auxiliaries.zmq.nack(fcn, desc="Not implemented")
     return answer
 
   def _request_set_pose(self, msg):
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
+    # Test nack reasons
+    if not self.from_owner(msg):
+      descr = 'Requester ({}) is not the SEN owner'.format(msg['id'])
+      answer = dss.auxiliaries.zmq.nack(fcn, descr)
+    else:
+      # Accept
+      answer = dss.auxiliaries.zmq.ack(fcn)
+      # But not implementede so nack
+      answer = dss.auxiliaries.zmq.nack(fcn, desc="Not implemented")
+    return answer
+
+  def _request_clear_pose(self, msg):
+    fcn = dss.auxiliaries.zmq.get_fcn(msg)
     # No nack reasons, accept
     answer = dss.auxiliaries.zmq.ack(fcn, {'idle': self._task_event.is_set()})
     # But not implementede so nack
     answer = dss.auxiliaries.zmq.nack(fcn, desc="Not implemented")
     return answer
+
 
   def _request_set_gimbal(self, msg) -> dict:
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
