@@ -282,8 +282,11 @@ class SensorTest():
 
     # Get, set clear pose
     try:
-      pose = self.sen.get_pose()
-      print(f'The pose is \n{json.dumps(pose, indent=4)}')
+      if self.sen.is_pose_set():
+        pose = self.sen.get_pose()
+        print(f'The pose is \n{json.dumps(pose, indent=4)}')
+      else:
+        print('Pose is not set')
       print("Setting the pose and asking for it again")
       self.sen.set_pose(lat=58.11, lon=16.22, alt=120, roll=0, pitch=46, yaw= 10)
       time.sleep(0.2)
@@ -292,8 +295,13 @@ class SensorTest():
       print("Lets clear pose and get it again")
       self.sen.clear_pose()
       time.sleep(0.2)
-      self.sen.get_pose()
-      print(f'The pose is \n{json.dumps(pose, indent=4)}')
+      if self.sen.is_pose_set():
+        pose = self.sen.get_pose()
+        print(f'The pose is \n{json.dumps(pose, indent=4)}')
+      else:
+        print('Pose is not set')
+      self.sen.set_pose(lat=59.11, lon=17.22, alt=121, roll=0, pitch=47, yaw= 11)
+
     except dss.auxiliaries.exception.Nack as error:
       _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
 

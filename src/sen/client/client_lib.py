@@ -318,6 +318,14 @@ class Client:
   def get_pose(self):
     return self._sen.get_pose()
 
+  def is_pose_set(self):
+    try:
+      self._sen.get_pose()
+    except dss.auxiliaries.exception.Nack:
+      return False
+    else:
+      return True
+
   def set_pose(self, lat, lon, alt, roll, pitch, yaw):
     return self._sen.set_pose(lat, lon, alt, roll, pitch, yaw)
 
