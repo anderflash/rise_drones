@@ -273,6 +273,12 @@ class SensorTest():
     name = self.sen.test_get_name()
     print(f'Via API libraries, ZMQ and everything else we just figured that the camera name is {name} and its focus setting is {focus}')
 
+    try:
+      cal = self.sen.get_cam_cal()
+      print(f'The camera calibration info is \n{json.dumps(cal, indent=4)}')
+    except dss.auxiliaries.exception.Nack as error:
+      _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
+
     # Connect the subscribe socket
     timestamp = time.strftime('%Y%m%d_%H%M%S')
     self.setup_sen_info_stream(timestamp)
