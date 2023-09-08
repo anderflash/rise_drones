@@ -184,7 +184,7 @@ class SEN:
     if not dss.auxiliaries.zmq.is_ack(answer, call):
       raise dss.auxiliaries.exception.Nack(dss.auxiliaries.zmq.get_nack_reason(answer), fcn=call)
     # return
-    return answer
+    return answer['pose']
 
   def set_pose(self, lat, lon, alt, roll, pitch, yaw):
     call = 'set_pose'

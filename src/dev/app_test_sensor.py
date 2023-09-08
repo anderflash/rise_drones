@@ -280,7 +280,8 @@ class SensorTest():
     except dss.auxiliaries.exception.Nack as error:
       _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
 
-    # Get, set clear pose
+
+    # Get, set clear pose lingo
     try:
       if self.sen.is_pose_set():
         pose = self.sen.get_pose()
@@ -300,10 +301,13 @@ class SensorTest():
         print(f'The pose is \n{json.dumps(pose, indent=4)}')
       else:
         print('Pose is not set')
+      print("Setting pose again")
       self.sen.set_pose(lat=59.11, lon=17.22, alt=121, roll=0, pitch=47, yaw= 11)
-
+      pose = self.sen.get_pose()
+      print(f'The pose is \n{json.dumps(pose, indent=4)}')
     except dss.auxiliaries.exception.Nack as error:
       _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
+
 
     # Connect the subscribe socket
     timestamp = time.strftime('%Y%m%d_%H%M%S')
