@@ -463,7 +463,7 @@ running task.
   }
 
 **Nack reasons:**
-  - None
+  - Pose not set
 
 
 .. _fcnsenetpose:

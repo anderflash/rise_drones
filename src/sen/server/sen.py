@@ -249,10 +249,23 @@ class Server:
 
   def _request_get_pose(self, msg):
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
-    # No nack reasons, accept
-    answer = dss.auxiliaries.zmq.ack(fcn, {'TBD': "Not implemented"})
-    # But not implementede so nack
-    answer = dss.auxiliaries.zmq.nack(fcn, desc="Not implemented")
+    # Test nack reasons
+    try:
+      # Look if pose is not set
+      if not (config['sensorCalibration']['pose']['lat']==0 and config['sensorCalibration']['pose']['lon']==0):
+        # accept
+        pass
+      else:
+        # Nack, pose is not set
+        answer = dss.auxiliaries.zmq.nack(fcn, desc='Pose not set')
+        return answer
+    except:
+      # Nack, configfile not set up
+        answer = dss.auxiliaries.zmq.nack(fcn, desc='Pose not set')
+        return answer
+    # Accept
+    answer = dss.auxiliaries.zmq.ack(fcn, {'id': self._sen_id})
+    answer['pose'] = config['sensorCalibration']['pose']
     return answer
 
   def _request_set_pose(self, msg):
@@ -264,16 +277,29 @@ class Server:
     else:
       # Accept
       answer = dss.auxiliaries.zmq.ack(fcn)
-      # But not implementede so nack
-      answer = dss.auxiliaries.zmq.nack(fcn, desc="Not implemented")
+      # Write pose to config dict
+      config['sensorCalibration']['pose']['lat'] =msg['lat']
+      config['sensorCalibration']['pose']['lon'] =msg['lon']
+      config['sensorCalibration']['pose']['alt'] =msg['alt']
+      config['sensorCalibration']['pose']['roll'] =msg['roll']
+      config['sensorCalibration']['pose']['pitch'] =msg['pitch']
+      config['sensorCalibration']['pose']['yaw'] =msg['yaw']
+      #Write pose to config file
+      with open(config_path, 'w', encoding="utf-8") as c_file:
+        conf_str = json.dumps(config, indent=2)
+        c_file.write(conf_str)
     return answer
 
   def _request_clear_pose(self, msg):
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
     # No nack reasons, accept
-    answer = dss.auxiliaries.zmq.ack(fcn, {'idle': self._task_event.is_set()})
-    # But not implementede so nack
-    answer = dss.auxiliaries.zmq.nack(fcn, desc="Not implemented")
+    answer = dss.auxiliaries.zmq.ack(fcn)
+    # Clear pose from config dict
+    config['sensorCalibration']['pose'] = {}
+    #Write pose to config file
+    with open(config_path, 'w', encoding="utf-8") as c_file:
+      conf_str = json.dumps(config, indent=2)
+      c_file.write(conf_str)
     return answer
 
 

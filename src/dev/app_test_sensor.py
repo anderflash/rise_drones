@@ -273,9 +273,27 @@ class SensorTest():
     name = self.sen.test_get_name()
     print(f'Via API libraries, ZMQ and everything else we just figured that the camera name is {name} and its focus setting is {focus}')
 
+    # Get camera calibration
     try:
       cal = self.sen.get_cam_cal()
       print(f'The camera calibration info is \n{json.dumps(cal, indent=4)}')
+    except dss.auxiliaries.exception.Nack as error:
+      _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
+
+    # Get, set clear pose
+    try:
+      pose = self.sen.get_pose()
+      print(f'The pose is \n{json.dumps(pose, indent=4)}')
+      print("Setting the pose and asking for it again")
+      self.sen.set_pose(lat=58.11, lon=16.22, alt=120, roll=0, pitch=46, yaw= 10)
+      time.sleep(0.2)
+      pose = self.sen.get_pose()
+      print(f'The pose is \n{json.dumps(pose, indent=4)}')
+      print("Lets clear pose and get it again")
+      self.sen.clear_pose()
+      time.sleep(0.2)
+      self.sen.get_pose()
+      print(f'The pose is \n{json.dumps(pose, indent=4)}')
     except dss.auxiliaries.exception.Nack as error:
       _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
 

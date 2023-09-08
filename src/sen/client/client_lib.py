@@ -315,6 +315,16 @@ class Client:
   def get_idle(self):
     return self._sen.get_idle()
 
+  def get_pose(self):
+    return self._sen.get_pose()
+
+  def set_pose(self, lat, lon, alt, roll, pitch, yaw):
+    return self._sen.set_pose(lat, lon, alt, roll, pitch, yaw)
+
+  def clear_pose(self):
+    return self._sen.clear_pose()
+
+
 
   def set_init_point(self, heading_ref):
     self._sen.set_init_point(heading_ref)

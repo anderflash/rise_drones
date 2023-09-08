@@ -174,6 +174,48 @@ class SEN:
     # return
     return answer['idle']
 
+  def get_pose(self) -> dict:
+    call = 'get_pose'
+    # build message
+    msg = {'fcn': call, 'id': self._app_id}
+    # send and receive message
+    answer = self._socket.send_and_receive(msg)
+    # handle nack
+    if not dss.auxiliaries.zmq.is_ack(answer, call):
+      raise dss.auxiliaries.exception.Nack(dss.auxiliaries.zmq.get_nack_reason(answer), fcn=call)
+    # return
+    return answer
+
+  def set_pose(self, lat, lon, alt, roll, pitch, yaw):
+    call = 'set_pose'
+    # build message
+    msg = {'fcn': call, 'id': self._app_id}
+    msg['lat']=lat
+    msg['lon']=lon
+    msg['alt']=alt
+    msg['roll']=roll
+    msg['pitch']=pitch
+    msg['yaw']=yaw
+    # send and receive message
+    answer = self._socket.send_and_receive(msg)
+    # handle nack
+    if not dss.auxiliaries.zmq.is_ack(answer, call):
+      raise dss.auxiliaries.exception.Nack(dss.auxiliaries.zmq.get_nack_reason(answer), fcn=call)
+    # return
+    return answer
+
+  def clear_pose(self):
+    call = 'clear_pose'
+    # build message
+    msg = {'fcn': call, 'id': self._app_id}
+    # send and receive message
+    answer = self._socket.send_and_receive(msg)
+    # handle nack
+    if not dss.auxiliaries.zmq.is_ack(answer, call):
+      raise dss.auxiliaries.exception.Nack(dss.auxiliaries.zmq.get_nack_reason(answer), fcn=call)
+    # return
+    return answer
+
   def get_state(self) -> dict:
     call = 'get_state'
     # build message

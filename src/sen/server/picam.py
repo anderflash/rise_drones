@@ -29,7 +29,7 @@ class PiCam():
 
     # Demonstration of config data
     try:
-      calibration = config['SensorCalibration']
+      calibration = config['sensorCalibration']
       print(f'printing congfigdata from file found at: {config_path}')
       print(json.dumps(calibration, indent = 4))
       self.logger.info(f'Calibration data: {calibration}')
