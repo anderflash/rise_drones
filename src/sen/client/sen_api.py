@@ -2,7 +2,7 @@
 Sensor *API*
 
 This class is in charge of the socket and the actual API as described
-in documentation.
+in documentation. 
 '''
 
 import logging
