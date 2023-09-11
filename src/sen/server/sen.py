@@ -381,7 +381,7 @@ class Server:
     # Check nack reasons
     # Test if we have a rtsp stream in config
     try:
-      url = config['rtsp']
+      url = config['rtsp']['url']
     except:
       answer = dss.auxiliaries.zmq.nack(fcn,'No stream available')
       return answer
