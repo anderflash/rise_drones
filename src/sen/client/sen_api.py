@@ -319,7 +319,7 @@ class SEN:
     if not dss.auxiliaries.zmq.is_ack(answer, call):
       raise dss.auxiliaries.exception.Nack(dss.auxiliaries.zmq.get_nack_reason(answer), fcn=call)
     # return
-    return
+    return answer
 
   def data_stream(self, stream: str, enable: bool) -> None:
     call = 'data_stream'
