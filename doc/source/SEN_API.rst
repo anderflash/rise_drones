@@ -99,6 +99,42 @@ horizontal plane relative true north defines the yaw, the angle between the
 horizontal plane and the center line defines the pitch angle and the agnle
 between image horizontal axis and the horizon defines roll angle.
 
+Config file
+-----------
+
+Some requests will requre the sensor to store some information in non volatile
+memory, the sugestions is to store it in the config file and add the following
+blocks. The primary location for config files are in
+/home/user/.rise_drones/.config
+
+.. code-block:: json
+  :caption: Generic function call from application to |SEN|
+  :linenos:
+
+  {
+    "sensorCalibration": {
+      "pose": {
+        "lat": 59.11,
+        "lon": 17.22,
+        "alt": 121,
+        "roll": 0,
+        "pitch": 47,
+        "yaw": 11
+      },
+      "intrinsics": {
+        "camera_matrix": [0,0,0,  0,0,0,  0,0,0],
+        "dist_coeff": [0,0,0,  0,0,0]
+      },
+      "extrinsics": {
+        "rvec": [0,0,0],
+        "tvec": [0,0,0]
+      }
+    },
+    "rtsp": {
+      "url": "http://my_static_ip_or_hostname:8889/stream/"
+    }
+  }
+
 
 
 .. _sencontrolAPI:
@@ -450,9 +486,9 @@ running task.
   :caption: Function response: ``get_pose``
   :linenos:
 
-
   {
     "fcn": "ack",
+    "call": "get_pose",
     "lat": -0.0018926148768514395,
     "long": 0.0014366497052833438,
     "alt": 28.3,
@@ -596,6 +632,41 @@ The key ``enable`` takes a bool to enable or disable the algorithm.
   - Cannot disable algorithm not running
   - Algorithm not supported, <stream>
 
+
+
+.. _fcnsengetrtspurl:
+
+Fcn: ``get_rtsp_url``
+~~~~~~~~~~~~~~~~~~~~~
+.. compatibility:: badge
+  :py-client: -
+
+The function ``get_rtsp_url`` acquires the rtsp url for the video stream of the
+sensor.
+
+
+.. code-block:: json
+  :caption: Function call: ``get_rtsp_url``
+  :linenos:
+
+  {
+    "fcn": "get_rtsp_url",
+    "call": "get_rtsp_url",
+    "id": "<requestor id>"
+  }
+
+
+.. code-block:: json
+  :caption: Function response: ``get_rtsp_url``
+  :linenos:
+
+  {
+    "fcn": "ack",
+    "url": "the_url_as_a_string"
+  }
+
+**Nack reasons:**
+  - No stream available
 
 
 .. .. _fcnphoto:
