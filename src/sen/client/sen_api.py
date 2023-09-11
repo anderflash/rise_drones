@@ -309,6 +309,18 @@ class SEN:
     # return
     return
 
+  def get_rtsp_url(self) -> dict:
+    call = 'get_rtsp_url'
+    # build message
+    msg = {'fcn': call, 'id': self._app_id}
+    # send and receive message
+    answer = self._socket.send_and_receive(msg)
+    # handle nack
+    if not dss.auxiliaries.zmq.is_ack(answer, call):
+      raise dss.auxiliaries.exception.Nack(dss.auxiliaries.zmq.get_nack_reason(answer), fcn=call)
+    # return
+    return
+
   def data_stream(self, stream: str, enable: bool) -> None:
     call = 'data_stream'
     # build message

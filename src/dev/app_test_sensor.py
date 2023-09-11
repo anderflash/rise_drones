@@ -281,6 +281,15 @@ class SensorTest():
       _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
 
 
+    # Get rtsp url
+    try:
+      url = self.sen.get_rtsp_url()
+    except dss.auxiliaries.exception.Nack:
+      print("The camera does not have a rtsp stream")
+    else:
+      print(f'The rtsp url is {url}')
+
+
     # Get, set clear pose lingo
     try:
       if self.sen.is_pose_set():

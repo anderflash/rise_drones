@@ -262,7 +262,11 @@ class Client:
     answer = self._sen.get_cam_cal()
     return answer
 
-  # Enable data stream
+  def get_rtsp_url(self):
+  # Get the url
+    answer = self._sen.get_rtsp_url()
+    return answer['url']
+
   def enable_data_stream(self, stream):
     self._sen.data_stream(stream=stream, enable=True)
 

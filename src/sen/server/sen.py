@@ -90,6 +90,7 @@ class Server:
                       'cv_algorithm':       {'request': self._request_cv_argorithm,       'task': self._task_cv_algorithm, 'priority': 1},
                       'test_get_focus':     {'request': self._request_test_get_focus,     'task': None},
                       'test_get_name':      {'request': self._request_test_get_name,      'task': None},
+                      'get_rtsp_url':       {'request': self._request_get_rtsp_url,        'task': None},
                       'data_stream':        {'request': self._request_data_stream,        'task': None},#self._task_data_stream,'priority': MAX_PRIORITY},
                       # 'disconnect':         {'request': self._request_disconnect,         'task': self._task_disconnect, 'priority': 1},
                       # 'dss_srtl':           {'request': self._request_dss_srtl,           'task': self._task_dss_srtl, 'priority': MAX_PRIORITY},
@@ -374,6 +375,22 @@ class Server:
           # TODO, download photo
           answer = dss.auxiliaries.zmq.nack(fcn, 'Download photo not implemented')
     return answer
+
+  def _request_get_rtsp_url(self, msg) -> dict:
+    fcn = dss.auxiliaries.zmq.get_fcn(msg)
+    # Check nack reasons
+    # Test if we have a rtsp stream in config
+    try:
+      url = config['rtsp']
+    except:
+      answer = dss.auxiliaries.zmq.nack(fcn,'No stream available')
+      return answer
+
+    # Accept
+    answer = dss.auxiliaries.zmq.ack(fcn)
+    answer['url'] = url
+    return answer
+    # Send answer
 
   def _request_data_stream(self, msg) -> dict:
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
