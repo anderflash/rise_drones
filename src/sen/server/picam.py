@@ -30,11 +30,17 @@ class PiCam():
     # Demonstration of config data
     try:
       calibration = config['sensorCalibration']
-      print(f'printing congfigdata from file found at: {config_path}')
+      print(f'The sensor calibration data found in config file at: {config_path}, under key sensorCalibration is:')
       print(json.dumps(calibration, indent = 4))
       self.logger.info(f'Calibration data: {calibration}')
     except:
-      print('\n WARNING No calibration data found. Make sure to add calibration data to config file \n')
+      print('\n WARNING No calibration data found. read the manual and correct config file \n')
+
+    try:
+      rtsp_url = config['rtsp']['url']
+      print(f'The rtsp-url found from config is: {rtsp_url}')
+    except:
+      print('The configuraition file is mission the key rtsp, read the documentation!')
 
     self._main_thread_active = True
     self._thread_main = threading.Thread(target=self._main_thread, daemon=True)
