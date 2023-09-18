@@ -258,7 +258,15 @@ class Client:
     # Return name as a string
     return answer['name']
 
-  # Enable data stream
+  def get_cam_cal(self):
+    answer = self._sen.get_cam_cal()
+    return answer
+
+  def get_rtsp_url(self):
+  # Get the url
+    answer = self._sen.get_rtsp_url()
+    return answer['url']
+
   def enable_data_stream(self, stream):
     self._sen.data_stream(stream=stream, enable=True)
 
@@ -310,6 +318,24 @@ class Client:
 
   def get_idle(self):
     return self._sen.get_idle()
+
+  def get_pose(self):
+    return self._sen.get_pose()
+
+  def is_pose_set(self):
+    try:
+      self._sen.get_pose()
+    except dss.auxiliaries.exception.Nack:
+      return False
+    else:
+      return True
+
+  def set_pose(self, lat, lon, alt, roll, pitch, yaw):
+    return self._sen.set_pose(lat, lon, alt, roll, pitch, yaw)
+
+  def clear_pose(self):
+    return self._sen.clear_pose()
+
 
 
   def set_init_point(self, heading_ref):

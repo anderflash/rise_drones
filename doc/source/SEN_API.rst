@@ -99,6 +99,42 @@ horizontal plane relative true north defines the yaw, the angle between the
 horizontal plane and the center line defines the pitch angle and the agnle
 between image horizontal axis and the horizon defines roll angle.
 
+Config file
+-----------
+
+Some requests will requre the sensor to store some information in non volatile
+memory, the sugestions is to store it in the config file and add the following
+blocks. The primary location for config files are in
+/home/user/.rise_drones/.config
+
+.. code-block:: json
+  :caption: Generic function call from application to |SEN|
+  :linenos:
+
+  {
+    "sensorCalibration": {
+      "pose": {
+        "lat": 59.11,
+        "lon": 17.22,
+        "alt": 121,
+        "roll": 0,
+        "pitch": 47,
+        "yaw": 11
+      },
+      "intrinsics": {
+        "camera_matrix": [0,0,0,  0,0,0,  0,0,0],
+        "dist_coeff": [0,0,0,  0,0,0]
+      },
+      "extrinsics": {
+        "rvec": [0,0,0],
+        "tvec": [0,0,0]
+      }
+    },
+    "rtsp": {
+      "url": "http://my_static_ip_or_hostname:8889/stream/"
+    }
+  }
+
 
 
 .. _sencontrolAPI:
@@ -212,8 +248,8 @@ The SEN responds to the ``heart_beat`` function call with an ack.
 
   .. _fcnsengetinfo:
 
-Fcn: get_info
-~~~~~~~~~~~~~
+Fcn: ``get_info``
+~~~~~~~~~~~~~~~~~
 
 
 The function ``get_info`` requests connection information from the SEN.
@@ -242,6 +278,46 @@ The SEN answers with an ack and the applicable information.
 
 **Nack reasons:**
   - None
+
+  .. _fcnsenget_cam_calib:
+
+Fcn: ``get_cam_cal``
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+The function ``get_cam_cal`` requests static calibration information from the
+SEN, the instrisics and extrinsics of the camera.
+
+.. code-block:: json
+  :caption: Function call: ``get_cam_cal``
+  :linenos:
+
+  {
+    "fcn": "get_cam_cal",
+    "id": "<requestor id>"
+  }
+
+.. code-block:: json
+  :caption: Reply: ``get_cam_cal``
+  :linenos:
+
+  {
+    "fcn": "ack",
+    "call": "get_cam_cal",
+    "id": "<replier id>",
+    "intrinsics": {
+      "camera_matrix": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      "dist_coeff": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    },
+    "extrinsics": {
+      "rvec": [0.0, 0.0, 0.0],
+      "tvec": [0.0, 0.0, 0.0]
+    }
+  }
+
+**Nack reasons:**
+  - Calibration not available
+
 
 .. _fcnsenwhocontrols:
 
@@ -384,7 +460,7 @@ running or media is beeing streamed for example, otherwise true.
 .. _fcnsengetpose:
 
 Fcn: ``get_pose``
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 .. compatibility:: badge
   :py-client: -
 
@@ -410,9 +486,9 @@ running task.
   :caption: Function response: ``get_pose``
   :linenos:
 
-
   {
     "fcn": "ack",
+    "call": "get_pose",
     "lat": -0.0018926148768514395,
     "long": 0.0014366497052833438,
     "alt": 28.3,
@@ -423,7 +499,7 @@ running task.
   }
 
 **Nack reasons:**
-  - None
+  - Pose not set
 
 
 .. _fcnsenetpose:
@@ -456,7 +532,38 @@ north].
   }
 
 **Nack reasons:**
-  - None
+  - Requestor is not the SEN owner
+
+  .. _fcnsenclearpose:
+
+Fcn: ``clear_pose``
+~~~~~~~~~~~~~~~~~~~
+
+
+The function ``clear_pose`` requests to clear the pose information of the SEN. If
+ack the sensor clears the camera pose. The previous camera pose is permanently deleted.
+
+.. code-block:: json
+  :caption: Function call: ``clear_pose``
+  :linenos:
+
+  {
+    "fcn": "clear_pose",
+    "id": "<requestor id>"
+  }
+
+.. code-block:: json
+  :caption: Reply: ``clear_pose``
+  :linenos:
+
+  {
+    "fcn": "ack",
+    "call": "clear_pose",
+    "id": "<replier id>"
+  }
+
+**Nack reasons:**
+  - Requester is not the SEN owner
 
 
 .. _fcnsenetgimbal:
@@ -489,6 +596,7 @@ the gimbal in use will just be ignored.
   - Requester is not the SEN owner
   - Application is not in controls
   - Roll, pitch or yaw is out of range for the gimbal
+  - Not capable
 
 
 .. _fcncvalgorithm:
@@ -524,6 +632,41 @@ The key ``enable`` takes a bool to enable or disable the algorithm.
   - Cannot disable algorithm not running
   - Algorithm not supported, <stream>
 
+
+
+.. _fcnsengetrtspurl:
+
+Fcn: ``get_rtsp_url``
+~~~~~~~~~~~~~~~~~~~~~
+.. compatibility:: badge
+  :py-client: -
+
+The function ``get_rtsp_url`` acquires the rtsp url for the video stream of the
+sensor.
+
+
+.. code-block:: json
+  :caption: Function call: ``get_rtsp_url``
+  :linenos:
+
+  {
+    "fcn": "get_rtsp_url",
+    "call": "get_rtsp_url",
+    "id": "<requestor id>"
+  }
+
+
+.. code-block:: json
+  :caption: Function response: ``get_rtsp_url``
+  :linenos:
+
+  {
+    "fcn": "ack",
+    "url": "the_url_as_a_string"
+  }
+
+**Nack reasons:**
+  - No stream available
 
 
 .. .. _fcnphoto:

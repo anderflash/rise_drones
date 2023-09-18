@@ -78,16 +78,19 @@ class Server:
     # Functions in same order as documentation
     self._commands = {'heart_beat':         {'request': self._request_heart_beat,         'task': None},
                       'get_info':           {'request': self._request_get_info,           'task': None},
+                      'get_cam_cal':        {'request': self._request_get_cam_cal,        'task': None},
                       'who_controls':       {'request': self._request_who_controls,       'task': None},
                       'get_owner':          {'request': self._request_get_owner,          'task': None},
                       'set_owner':          {'request': self._request_set_owner,          'task': None},
                       'get_idle':           {'request': self._request_get_idle,           'task': None},
                       'get_pose':           {'request': self._request_get_pose,           'task': None},
                       'set_pose':           {'request': self._request_set_pose,           'task': None},
+                      'clear_pose':         {'request': self._request_clear_pose,         'task': None},
                       'set_gimbal':         {'request': self._request_set_gimbal,         'task': None},
                       'cv_algorithm':       {'request': self._request_cv_argorithm,       'task': self._task_cv_algorithm, 'priority': 1},
                       'test_get_focus':     {'request': self._request_test_get_focus,     'task': None},
                       'test_get_name':      {'request': self._request_test_get_name,      'task': None},
+                      'get_rtsp_url':       {'request': self._request_get_rtsp_url,        'task': None},
                       'data_stream':        {'request': self._request_data_stream,        'task': None},#self._task_data_stream,'priority': MAX_PRIORITY},
                       # 'disconnect':         {'request': self._request_disconnect,         'task': self._task_disconnect, 'priority': 1},
                       # 'dss_srtl':           {'request': self._request_dss_srtl,           'task': self._task_dss_srtl, 'priority': MAX_PRIORITY},
@@ -189,6 +192,28 @@ class Server:
     answer = dss.auxiliaries.zmq.ack(fcn, {'info_pub_port': self._pub_socket.port, 'data_pub_port': '', 'id': self._sen_id})
     return answer
 
+  def _request_get_cam_cal(self, msg) -> dict:
+    fcn = dss.auxiliaries.zmq.get_fcn(msg)
+    # Test nack reasons
+    try:
+      # Look for empty config file
+      if not all(values == 0 for values in config['intrisics']['camera_matrix']):
+        # accept
+        pass
+      else:
+        # Nack, camera matrix is all 0
+        answer = dss.auxiliaries.zmq.nack(fcn, desc='Calibration not available')
+        return answer
+    except:
+      # Nack, configfile not set up
+        answer = dss.auxiliaries.zmq.nack(fcn, desc='Calibration not available')
+        return answer
+    # Accept
+    answer = dss.auxiliaries.zmq.ack(fcn, {'id': self._sen_id})
+    answer['intrinsics'] = config['intrinsics']
+    answer['extrinsics'] = config['extrinsics']
+    return answer
+
   def _request_who_controls(self, msg) -> dict:
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
     # No nack reasons, accept
@@ -225,19 +250,59 @@ class Server:
 
   def _request_get_pose(self, msg):
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
-    # No nack reasons, accept
-    answer = dss.auxiliaries.zmq.ack(fcn, {'idle': self._task_event.is_set()})
-    # But not implementede so nack
-    answer = dss.auxiliaries.zmq.nack(fcn, desc="Not implemented")
+    # Test nack reasons
+    try:
+      # Look if pose is not set
+      if not (config['sensorCalibration']['pose']['lat']==0 and config['sensorCalibration']['pose']['lon']==0):
+        # accept
+        pass
+      else:
+        # Nack, pose is not set
+        answer = dss.auxiliaries.zmq.nack(fcn, desc='Pose not set')
+        return answer
+    except:
+      # Nack, configfile not set up
+        answer = dss.auxiliaries.zmq.nack(fcn, desc='Pose not set')
+        return answer
+    # Accept
+    answer = dss.auxiliaries.zmq.ack(fcn, {'id': self._sen_id})
+    answer['pose'] = config['sensorCalibration']['pose']
     return answer
 
   def _request_set_pose(self, msg):
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
-    # No nack reasons, accept
-    answer = dss.auxiliaries.zmq.ack(fcn, {'idle': self._task_event.is_set()})
-    # But not implementede so nack
-    answer = dss.auxiliaries.zmq.nack(fcn, desc="Not implemented")
+    # Test nack reasons
+    if not self.from_owner(msg):
+      descr = 'Requester ({}) is not the SEN owner'.format(msg['id'])
+      answer = dss.auxiliaries.zmq.nack(fcn, descr)
+    else:
+      # Accept
+      answer = dss.auxiliaries.zmq.ack(fcn)
+      # Write pose to config dict
+      config['sensorCalibration']['pose']['lat'] =msg['lat']
+      config['sensorCalibration']['pose']['lon'] =msg['lon']
+      config['sensorCalibration']['pose']['alt'] =msg['alt']
+      config['sensorCalibration']['pose']['roll'] =msg['roll']
+      config['sensorCalibration']['pose']['pitch'] =msg['pitch']
+      config['sensorCalibration']['pose']['yaw'] =msg['yaw']
+      #Write pose to config file
+      with open(config_path, 'w', encoding="utf-8") as c_file:
+        conf_str = json.dumps(config, indent=2)
+        c_file.write(conf_str)
     return answer
+
+  def _request_clear_pose(self, msg):
+    fcn = dss.auxiliaries.zmq.get_fcn(msg)
+    # No nack reasons, accept
+    answer = dss.auxiliaries.zmq.ack(fcn)
+    # Clear pose from config dict
+    config['sensorCalibration']['pose'] = {}
+    #Write pose to config file
+    with open(config_path, 'w', encoding="utf-8") as c_file:
+      conf_str = json.dumps(config, indent=2)
+      c_file.write(conf_str)
+    return answer
+
 
   def _request_set_gimbal(self, msg) -> dict:
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
@@ -310,6 +375,22 @@ class Server:
           # TODO, download photo
           answer = dss.auxiliaries.zmq.nack(fcn, 'Download photo not implemented')
     return answer
+
+  def _request_get_rtsp_url(self, msg) -> dict:
+    fcn = dss.auxiliaries.zmq.get_fcn(msg)
+    # Check nack reasons
+    # Test if we have a rtsp stream in config
+    try:
+      url = config['rtsp']['url']
+    except:
+      answer = dss.auxiliaries.zmq.nack(fcn,'No stream available')
+      return answer
+
+    # Accept
+    answer = dss.auxiliaries.zmq.ack(fcn)
+    answer['url'] = url
+    return answer
+    # Send answer
 
   def _request_data_stream(self, msg) -> dict:
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
