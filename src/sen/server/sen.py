@@ -483,12 +483,12 @@ class Server:
   # TASKS
   #############################################################################
   # Task computer vision algorithm
-  def _task_cv_algorithm(self, msg):
-    algortihm = msg['algorithm']
+  def _task_cv_algoritm(self, msg):
+    algorithm = msg['algorithm']
     enable = msg['enable']
     if enable:
       # method task_cv_algorithm runs a loop until abort task
-      self._cam.task_cv_algorithm(algortihm)
+      self._cam.task_cv_algorithm(algorithm)
     else:
       # The task is the running task since the request is acked. Abort task
       self._cam._abort_task = True
