@@ -483,7 +483,7 @@ class Server:
   # TASKS
   #############################################################################
   # Task computer vision algorithm
-  def _task_cv_algoritm(self, msg):
+  def _task_cv_algorithm(self, msg):
     algorithm = msg['algorithm']
     enable = msg['enable']
     if enable:
