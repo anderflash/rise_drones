@@ -154,11 +154,15 @@ def demogrify(msg: str) -> typing.Tuple[str, dict]:
 
   return topic, message
 
-def image_to_bytes(filename: str) -> bytes:
+def image_file_to_bytes(filename: str) -> bytes:
   '''t.ex. filename="test.jpg"'''
   with open(filename, "rb") as fh:
     data = fh.read()
     data = base64.b64encode(data)
+  return data
+
+def image_to_bytes(img) -> bytes:
+  data = base64.b64encode(img)
   return data
 
 def bytes_to_string(data: bytes) -> str:
@@ -323,7 +327,6 @@ class Req(_Socket):
       return self._send_and_receive_string(msg)
 
 
-
   def _main_heartbeat(self):
     '''Send a heartbeat if no other messages were sent'''
     attempts = 0
@@ -420,6 +423,17 @@ class Pub(_Socket):
     json_msg = mogrify(topic, msg)
     self._socket.send_string(json_msg)
     _logger.debug(f'{self._label} %s\n', str(json_msg)[:256])
+
+  def publish_base64(self, topic: str, meta: json, img) -> None:
+    # Encode img using base64. Binary.
+    data = image_to_bytes(img)
+    # Serialize binary
+    img_as_string = bytes_to_string(data)
+    # Construct message
+    msg = {"photo": img_as_string, "metadata": meta}
+    json_msg_as_string = mogrify(topic, msg)
+    self._socket.send_string(json_msg_as_string)
+    _logger.debug(f'{self._label} %s\n', str(meta)[:256])
 
 #--------------------------------------------------------------------#
 

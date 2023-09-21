@@ -12,14 +12,15 @@ from dss.auxiliaries.config import config, config_path
 class PiCam():
 
 
-  def __init__(self, publish_method):
+  def __init__(self, info_publish_socket, data_publish_socket): # Socket or methodf??
     # TODO, why does this not work?
     self.logger = logging.getLogger(__name__)
     self.logger.info('PiCam init method')
 
     self._name = 'Raspbery pi cam'
     self._status_msg = ''
-    self.publish = publish_method
+    self._info_publish = info_publish_socket
+    self._data_publish = data_publish_socket
     self._publish_cv_BB = False
     self._publish_cv_OD = False
 
@@ -76,6 +77,17 @@ class PiCam():
 
   def test_cam_get_focus(self):
     return 6
+
+  def download_photo(self, index, data_pub_socket):
+    # The code to take a photo
+    # img = self.cam.capture_image()
+
+    # Bulid up meta, camera calibration and bounding box can be sent for example.
+    # There is an old metadata def in the documentation for DSS_API, 2.5.1
+    meta = {"index": 1, "filename": "", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0}
+    # Publish the image on the provided socket
+    data_pub_socket.publish_base64(topic = "photo", meta={""})
+
 
   def task_cv_algorithm(self, algorithm):
     self.logger.info('task: cv_algorithm')

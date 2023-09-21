@@ -60,11 +60,12 @@ class Server:
 
     # We will connect to crm, set random ports within range.
     self._serv_socket = dss.auxiliaries.zmq.Rep(self._zmq_context, port=app_port, label='sen', min_port=crm_port+1, max_port=crm_port+49)
-    self._pub_socket = dss.auxiliaries.zmq.Pub(self._zmq_context, port=None, min_port=crm_port+1, max_port=crm_port+50, label='info')
+    self._info_pub_socket = dss.auxiliaries.zmq.Pub(self._zmq_context, port=None, min_port=crm_port+1, max_port=crm_port+50, label='info')
+    self._data_pub_socket = dss.auxiliaries.zmq.Pub(self._zmq_context, port=None, min_port=crm_port+1, max_port=crm_port+50, label='data')
     self._logger.info('Starting pub server on %d... done', self._pub_socket.port)
 
     if camera == 'picam':
-      self._cam = sen.server.PiCam(publish_method = self._pub_socket.publish)
+      self._cam = sen.server.PiCam(self._info_pub_socket, self._data_pub_socket.publish)
       self._logger.info('Initiating PiCam..')
 
     # Publish attributes
@@ -365,15 +366,16 @@ class Server:
         index = msg['index']
         # Test more nack reasons
         if False:
-          anser = dss.auxiliaries.zmq.nack(fcn, 'Index out of range' + index)
+          answer = dss.auxiliaries.zmq.nack(fcn, 'Index out of range' + index)
         elif False:
-          anser = dss.auxiliaries.zmq.nack(fcn, 'Index string faulty' + index)
+          answer = dss.auxiliaries.zmq.nack(fcn, 'Index string faulty' + index)
         # Accept
         else:
           answer = dss.auxiliaries.zmq.ack(fcn)
           answer['description'] = 'download ' + 'index'
-          # TODO, download photo
-          answer = dss.auxiliaries.zmq.nack(fcn, 'Download photo not implemented')
+          # TODO, describe in documentation. Method uses base64
+          self._cam.download_photo(index, self._data_pub_socket)
+          answer = dss.auxiliaries.zmq.ack(fcn, 'Photo is published on data socket')
     return answer
 
   def _request_get_rtsp_url(self, msg) -> dict:

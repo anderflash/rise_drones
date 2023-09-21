@@ -317,6 +317,9 @@ class SensorTest():
     except dss.auxiliaries.exception.Nack as error:
       _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
 
+    # Connect to data subscribe socket
+    timestamp = time.strftime('%Y%m%d_%H%M%S')
+    self.setup_sen_data_stream(timestamp)
 
     # Connect the subscribe socket
     timestamp = time.strftime('%Y%m%d_%H%M%S')
