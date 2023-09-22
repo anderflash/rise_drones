@@ -178,7 +178,7 @@ class SensorTest():
     info_port = self.sen.get_port('info_pub_port')
     if info_port:
       self._sen_info_thread = threading.Thread(
-        target=self._main_info_sen, args=[self.sen._sen.ip, info_port, timestamp])
+        target=self._main_info_sen, args=[self.sen._sen.ip, info_port])
       self._sen_info_thread_active = True
       self._sen_info_thread.start()
 
@@ -195,7 +195,7 @@ class SensorTest():
 
 #--------------------------------------------------------------------#
 # The main function for subscribing to info messages from the SEN.
-  def _main_info_sen(self, ip, port, timestamp):
+  def _main_info_sen(self, ip, port):
     # Create info socket and start listening thread
     info_socket = dss.auxiliaries.zmq.Sub(_context, ip, port, "info " + self.crm.app_id)
     while self._sen_info_thread_active:
@@ -318,12 +318,10 @@ class SensorTest():
       _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
 
     # Connect to data subscribe socket
-    timestamp = time.strftime('%Y%m%d_%H%M%S')
-    self.setup_sen_data_stream(timestamp)
+    self.setup_sen_data_stream()
 
     # Connect the subscribe socket
-    timestamp = time.strftime('%Y%m%d_%H%M%S')
-    self.setup_sen_info_stream(timestamp)
+    self.setup_sen_info_stream()
 
     # Subscribe to objectDetection data
     self.sen.enable_data_stream('OD')
