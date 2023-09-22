@@ -503,8 +503,8 @@ class Server:
 
   def _task_photo(self, msg):
     if msg['cmd']=='download':
-      index = msg['cmd']['index']
-      resolution = msg['cmd']['resolution']
+      index = msg['index']
+      resolution = msg['resolution']
       self._cam.download_photo(index, resolution)
 
   #############################################################################
