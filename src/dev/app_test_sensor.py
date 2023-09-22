@@ -14,6 +14,8 @@ import logging
 import threading
 import time
 import traceback
+import base64
+from PIL import Image
 
 import sys
 import os
@@ -226,10 +228,14 @@ class SensorTest():
         (topic, msg) = data_socket.recv()
         if topic in ('photo', 'photo_low'):
           print("ett")
-          data = dss.auxiliaries.zmq.string_to_bytes(msg["photo"])
+          #data = dss.auxiliaries.zmq.string_to_bytes(msg["photo"])
+          data = str.encode(msg["photo"])
+          img_array = base64.decodebytes(data)
+          Image.fromarray(img_array).save('hardcoded.jpg')
+
           photo_filename = msg['metadata']['filename']
           print("tva")
-          dss.auxiliaries.zmq.bytes_to_array_image(photo_filename, data)
+          #dss.auxiliaries.zmq.bytes_to_array_image(photo_filename, data)
           print("tvafem")
           #dss.auxiliaries.zmq.bytes_to_image(photo_filename, data)
           json_filename = photo_filename[:-4] + ".json"
