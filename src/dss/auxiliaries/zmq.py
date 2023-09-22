@@ -437,7 +437,7 @@ class Pub(_Socket):
 
   def publish_base64(self, topic: str, meta: json, img) -> None:
     # Encode img using base64. Binary.
-    img_data = base64.b64decode(img)
+    img_data = base64.b64encode(img)
     str_data = img_data.decode('utf-8')
 
 
