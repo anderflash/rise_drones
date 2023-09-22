@@ -192,7 +192,7 @@ class Server:
   def _request_get_info(self, msg) -> dict:
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
     # No nack reasons, accept
-    answer = dss.auxiliaries.zmq.ack(fcn, {'info_pub_port': self._pub_socket.port, 'data_pub_port': '', 'id': self._sen_id})
+    answer = dss.auxiliaries.zmq.ack(fcn, {'info_pub_port': self._info_pub_socket.port, 'data_pub_port': self._data_pub_socket.port, 'id': self._sen_id})
     return answer
 
   def _request_get_cam_cal(self, msg) -> dict:
