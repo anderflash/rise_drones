@@ -230,9 +230,12 @@ class SensorTest():
           print("ett")
           #data = dss.auxiliaries.zmq.string_to_bytes(msg["photo"])
           data = str.encode(msg["photo"])
-          img_array = base64.decode(data)
-          Image.fromarray(img_array).save('hardcoded.jpg')
-
+          print("ett")
+          img_array = base64.b64decode(data)
+          print("base64 decoded")
+          print(img_array)
+          #Image.fromarray(img_array).save('hardcoded.jpg')
+          print("image saved")
           photo_filename = msg['metadata']['filename']
           print("tva")
           #dss.auxiliaries.zmq.bytes_to_array_image(photo_filename, data)
@@ -332,7 +335,7 @@ class SensorTest():
     # Connect to data subscribe socket
     self.setup_sen_data_stream()
     self.sen.photo_download(index=1, resolution='high')
-
+    time.sleep(5)
     # Connect the subscribe socket
     self.setup_sen_info_stream()
 

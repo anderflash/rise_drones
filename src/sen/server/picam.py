@@ -107,6 +107,7 @@ class PiCam():
     meta = {"index": 1, "filename": "hardcoded", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0}
     # Publish the image on the provided socket
 
+    img_array = b'apa'
     self._data_publish(topic = "photo", meta=meta, img=img_array)
     print('after publish')
 
