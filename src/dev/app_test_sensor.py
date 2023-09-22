@@ -16,6 +16,7 @@ import time
 import traceback
 import base64
 from PIL import Image
+import pickle
 
 import sys
 import os
@@ -229,12 +230,13 @@ class SensorTest():
         if topic in ('photo', 'photo_low'):
           print("ett")
           #data = dss.auxiliaries.zmq.string_to_bytes(msg["photo"])
-          data = str.encode(msg["photo"])
-          print("ett")
-          byte_array = base64.b64decode(data)
-          print("base64 decoded")
-          img_array = list[byte_array]
-          #Image.fromarray(img_array).save('hardcoded.jpg')
+          # data = str.encode(msg["photo"])
+          # print("ett")
+          # byte_array = base64.b64decode(data)
+          # print("base64 decoded")
+          # img_array = list[byte_array]
+          deserialized = pickle.loads(msg['photo'])
+          Image.fromarray(deserialized).save('hardcoded.jpg')
           print("image saved")
           photo_filename = msg['metadata']['filename']
           print("tva")

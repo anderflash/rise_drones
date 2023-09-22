@@ -14,6 +14,7 @@ import zmq
 import dss.auxiliaries.exception
 import dss.auxiliaries.config
 from PIL import Image
+import pickle
 
 #--------------------------------------------------------------------#
 
@@ -437,16 +438,16 @@ class Pub(_Socket):
 
   def publish_base64(self, topic: str, meta: json, img) -> None:
     # Encode img using base64. Binary.
-    img_data = base64.b64encode(img)
-    str_data = img_data.decode('utf-8')
-
+    # img_data = base64.b64encode(img)
+    # str_data = img_data.decode('utf-8')
+    serialized = pickle.dumps(img)
 
 
     #data = image_to_bytes(img)
     # Serialize binary
     #img_as_string = bytes_to_string(data)
     # Construct message
-    msg = {"photo": str_data, "metadata": meta}
+    msg = {"photo": serialized, "metadata": meta}
     json_msg_as_string = mogrify(topic, msg)
     self._socket.send_string(json_msg_as_string)
     _logger.debug(f'{self._label} %s\n', str(meta)[:256])
