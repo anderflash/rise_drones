@@ -96,7 +96,7 @@ class PiCam():
     time.sleep(1)
     #pil_img = io.BytesIO()
     print('pre capture image')
-    img = self._cam.capture_image("main")
+    img = self._cam.capture_array("main")
     print('post capture_image')
 
     # Bulid up meta, camera calibration and bounding box can be sent for example.
