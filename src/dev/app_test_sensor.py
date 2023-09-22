@@ -231,9 +231,9 @@ class SensorTest():
           #data = dss.auxiliaries.zmq.string_to_bytes(msg["photo"])
           data = str.encode(msg["photo"])
           print("ett")
-          img_array = base64.b64decode(data)
+          byte_array = base64.b64decode(data)
           print("base64 decoded")
-          print(img_array)
+          img_array = list[byte_array]
           #Image.fromarray(img_array).save('hardcoded.jpg')
           print("image saved")
           photo_filename = msg['metadata']['filename']
