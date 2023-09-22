@@ -5,7 +5,7 @@ import random
 import time
 import logging
 import json
-import io
+from PIL import Image
 from picamera2 import Picamera2
 
 import dss.auxiliaries
@@ -90,21 +90,21 @@ class PiCam():
     _ = resolution
 
     # The code to take a photo
-    camera_config = picam2.create_still_configuration(main={"size": (1920, 1080)}, lores={"size": (640, 480)}, display="lores")
+    camera_config = self._cam.create_still_configuration(main={"size": (1920, 1080)}, lores={"size": (640, 480)}, display="lores")
     self._cam.configure(camera_config)
     self._cam.start()
     time.sleep(1)
-    pil_img = io.BytesIO()
-    # print('pre capture image')
-    # img = self._cam.capture_file()
-    # print('post capture_image')
+    #pil_img = io.BytesIO()
+    print('pre capture image')
+    img = self._cam.capture_image("main")
+    print('post capture_image')
 
     # Bulid up meta, camera calibration and bounding box can be sent for example.
     # There is an old metadata def in the documentation for DSS_API, 2.5.1
     meta = {"index": 1, "filename": "hardcoded", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0}
     # Publish the image on the provided socket
-    print('will publish data')
-    self._data_publish(topic = "photo", meta=meta, img=pil_img)
+
+    self._data_publish(topic = "photo", meta=meta, img=img)
     print('after publish')
 
   def task_cv_algorithm(self, algorithm):
