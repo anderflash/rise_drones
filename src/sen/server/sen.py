@@ -67,7 +67,7 @@ class Server:
 
 
     if camera == 'picam':
-      self._cam = sen.server.PiCam(self._info_pub_socket, self._data_pub_socket.publish)
+      self._cam = sen.server.PiCam(self._info_pub_socket.publish, self._data_pub_socket.publish_base64)
       self._logger.info('Initiating PiCam..')
 
     # Publish attributes

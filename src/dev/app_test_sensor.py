@@ -173,7 +173,7 @@ class SensorTest():
 
 #--------------------------------------------------------------------#
 # Setup the SEN info stream thread
-  def setup_sen_info_stream(self, timestamp):
+  def setup_sen_info_stream(self):
     #Get info port from SEN
     info_port = self.sen.get_port('info_pub_port')
     if info_port:

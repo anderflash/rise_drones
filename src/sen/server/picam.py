@@ -13,15 +13,15 @@ from dss.auxiliaries.config import config, config_path
 class PiCam():
 
 
-  def __init__(self, info_publish_socket, data_publish_socket): # Socket or methodf??
+  def __init__(self, info_publish_method, data_publish_method): # Socket or methodf??
     # TODO, why does this not work?
     self.logger = logging.getLogger(__name__)
     self.logger.info('PiCam init method')
 
     self._name = 'Raspbery pi cam'
     self._status_msg = ''
-    self._info_publish = info_publish_socket
-    self._data_publish = data_publish_socket
+    self._info_publish = info_publish_method
+    self._data_publish = data_publish_method
     self._publish_cv_BB = False
     self._publish_cv_OD = False
 
@@ -91,7 +91,7 @@ class PiCam():
     # There is an old metadata def in the documentation for DSS_API, 2.5.1
     meta = {"index": 1, "filename": "hardcoded", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0}
     # Publish the image on the provided socket
-    data_pub_socket.publish_base64(topic = "photo", meta=meta, img=img)
+    self._data_publish(topic = "photo", meta=meta, img=img)
 
 
   def task_cv_algorithm(self, algorithm):
@@ -131,7 +131,7 @@ class PiCam():
 
         if self._publish_cv_BB:
           if antispam_ticker % 10 == 0:
-            self.publish(topic, {'x': x, 'y': y, 'width': width, 'height': height})
+            self._info_publish(topic, {'x': x, 'y': y, 'width': width, 'height': height})
         else:
           print('Calculating boundingBox without publishing result')
 
@@ -159,7 +159,7 @@ class PiCam():
 
         if self._publish_cv_OD:
           if antispam_ticker % 10 == 0:
-            self.publish(topic, {'x': x, 'y': y, 'width': width, 'height': height})
+            self._info_publish(topic, {'x': x, 'y': y, 'width': width, 'height': height})
         else:
           print('Calculating objectDetection without publishing result')
 
