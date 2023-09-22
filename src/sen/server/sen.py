@@ -62,7 +62,9 @@ class Server:
     self._serv_socket = dss.auxiliaries.zmq.Rep(self._zmq_context, port=app_port, label='sen', min_port=crm_port+1, max_port=crm_port+49)
     self._info_pub_socket = dss.auxiliaries.zmq.Pub(self._zmq_context, port=None, min_port=crm_port+1, max_port=crm_port+50, label='info')
     self._data_pub_socket = dss.auxiliaries.zmq.Pub(self._zmq_context, port=None, min_port=crm_port+1, max_port=crm_port+50, label='data')
-    self._logger.info('Starting pub server on %d... done', self._pub_socket.port)
+    self._logger.info('Starting info pub server on %d... done', self._info_pub_socket.port)
+    self._logger.info('Starting data pub server on %d... done', self._data_pub_socket.port)
+
 
     if camera == 'picam':
       self._cam = sen.server.PiCam(self._info_pub_socket, self._data_pub_socket.publish)
