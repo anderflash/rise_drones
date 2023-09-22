@@ -108,7 +108,6 @@ class PiCam():
     # Publish the image on the provided socket
     img_bytes = img.tobytes()
     self._data_publish(topic = "photo", meta=meta, img_bytes=img_bytes)
-    print('after publish')
 
   def task_cv_algorithm(self, algorithm):
     self.logger.info('task: cv_algorithm')
