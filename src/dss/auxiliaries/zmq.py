@@ -419,21 +419,13 @@ class Pub(_Socket):
     self._socket.send_string(json_msg)
     _logger.debug(f'{self._label} %s\n', str(json_msg)[:256])
 
-  def publish_base64(self, topic: str, meta: json, img) -> None:
-    # img_bytes = numpy_to_bytes(img)
-    # img_str = bytes_to_string(img_bytes)
-
+  def publish_base64(self, topic: str, meta: json, img_bytes) -> None:
     # Encode img using base64.
-    img_data = base64.b64encode(img)
-    str_data = img_data.decode('utf-8')
-    #serialized = pickle.dumps(img)
+    img_data = base64.b64encode(img_bytes)
+    img_str = img_data.decode('utf-8')
 
-
-    #data = image_to_bytes(img)
-    # Serialize binary
-    #img_as_string = bytes_to_string(data)
     # Construct message
-    msg = {"photo": str_data, "metadata": meta}
+    msg = {"photo": img_str, "metadata": meta}
     json_msg_as_string = mogrify(topic, msg)
     self._socket.send_string(json_msg_as_string)
     _logger.debug(f'{self._label} %s\n', str(meta)[:256])

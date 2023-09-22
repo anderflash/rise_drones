@@ -96,21 +96,18 @@ class PiCam():
     self._cam.configure(camera_config)
     self._cam.start()
     time.sleep(1)
-    #pil_img = io.BytesIO()
-    print('pre capture image')
     img = self._cam.capture_image("main")
-    print('post capture_image')
     # Test to write image
-    img.save('hardcoded2.jpg')
+    # img.save('hardcoded2.jpg')
     width, height = img.size
-    print(f'The size is {width}, {height}')
+    #print(f'The size is {width}, {height}')
 
     # Bulid up meta, camera calibration and bounding box can be sent for example.
-    # There is an old metadata def in the documentation for DSS_API, 2.5.1
+    # There is an old metadata def in the documentation for DSS_API, 2.5.1. Have to add width and height for reconstruction of image
     meta = {"index": 1, "filename": "hardcoded.jpg", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0, "width": width, "height": height}
     # Publish the image on the provided socket
-
-    self._data_publish(topic = "photo", meta=meta, img=img.tobytes())
+    img_bytes = img.tobytes()
+    self._data_publish(topic = "photo", meta=meta, img_bytes=img_bytes)
     print('after publish')
 
   def task_cv_algorithm(self, algorithm):
