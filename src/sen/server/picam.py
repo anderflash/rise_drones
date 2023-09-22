@@ -95,8 +95,9 @@ class PiCam():
     # There is an old metadata def in the documentation for DSS_API, 2.5.1
     meta = {"index": 1, "filename": "hardcoded", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0}
     # Publish the image on the provided socket
+    print('will publish data')
     self._data_publish(topic = "photo", meta=meta, img=img)
-
+    print('after publish')
 
   def task_cv_algorithm(self, algorithm):
     self.logger.info('task: cv_algorithm')

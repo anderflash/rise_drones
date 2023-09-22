@@ -267,55 +267,55 @@ class SensorTest():
     self.sen.await_controls()
     _logger.info("Application is in controls")
 
-    self.sen.set_gimbal(roll=0, pitch=-90, yaw=0)
+    # self.sen.set_gimbal(roll=0, pitch=-90, yaw=0)
 
-    focus = self.sen.test_get_focus()
-    name = self.sen.test_get_name()
-    print(f'Via API libraries, ZMQ and everything else we just figured that the camera name is {name} and its focus setting is {focus}')
+    # focus = self.sen.test_get_focus()
+    # name = self.sen.test_get_name()
+    # print(f'Via API libraries, ZMQ and everything else we just figured that the camera name is {name} and its focus setting is {focus}')
 
-    # Get camera calibration
-    try:
-      cal = self.sen.get_cam_cal()
-      print(f'The camera calibration info is \n{json.dumps(cal, indent=4)}')
-    except dss.auxiliaries.exception.Nack as error:
-      _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
-
-
-    # Get rtsp url
-    try:
-      url = self.sen.get_rtsp_url()
-    except dss.auxiliaries.exception.Nack:
-      print("The camera does not have a rtsp stream")
-    else:
-      print(f'The rtsp url is {url}')
+    # # Get camera calibration
+    # try:
+    #   cal = self.sen.get_cam_cal()
+    #   print(f'The camera calibration info is \n{json.dumps(cal, indent=4)}')
+    # except dss.auxiliaries.exception.Nack as error:
+    #   _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
 
 
-    # Get, set clear pose lingo
-    try:
-      if self.sen.is_pose_set():
-        pose = self.sen.get_pose()
-        print(f'The pose is \n{json.dumps(pose, indent=4)}')
-      else:
-        print('Pose is not set')
-      print("Setting the pose and asking for it again")
-      self.sen.set_pose(lat=58.11, lon=16.22, alt=120, roll=0, pitch=46, yaw= 10)
-      time.sleep(0.2)
-      pose = self.sen.get_pose()
-      print(f'The pose is \n{json.dumps(pose, indent=4)}')
-      print("Lets clear pose and get it again")
-      self.sen.clear_pose()
-      time.sleep(0.2)
-      if self.sen.is_pose_set():
-        pose = self.sen.get_pose()
-        print(f'The pose is \n{json.dumps(pose, indent=4)}')
-      else:
-        print('Pose is not set')
-      print("Setting pose again")
-      self.sen.set_pose(lat=59.11, lon=17.22, alt=121, roll=0, pitch=47, yaw= 11)
-      pose = self.sen.get_pose()
-      print(f'The pose is \n{json.dumps(pose, indent=4)}')
-    except dss.auxiliaries.exception.Nack as error:
-      _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
+    # # Get rtsp url
+    # try:
+    #   url = self.sen.get_rtsp_url()
+    # except dss.auxiliaries.exception.Nack:
+    #   print("The camera does not have a rtsp stream")
+    # else:
+    #   print(f'The rtsp url is {url}')
+
+
+    # # Get, set clear pose lingo
+    # try:
+    #   if self.sen.is_pose_set():
+    #     pose = self.sen.get_pose()
+    #     print(f'The pose is \n{json.dumps(pose, indent=4)}')
+    #   else:
+    #     print('Pose is not set')
+    #   print("Setting the pose and asking for it again")
+    #   self.sen.set_pose(lat=58.11, lon=16.22, alt=120, roll=0, pitch=46, yaw= 10)
+    #   time.sleep(0.2)
+    #   pose = self.sen.get_pose()
+    #   print(f'The pose is \n{json.dumps(pose, indent=4)}')
+    #   print("Lets clear pose and get it again")
+    #   self.sen.clear_pose()
+    #   time.sleep(0.2)
+    #   if self.sen.is_pose_set():
+    #     pose = self.sen.get_pose()
+    #     print(f'The pose is \n{json.dumps(pose, indent=4)}')
+    #   else:
+    #     print('Pose is not set')
+    #   print("Setting pose again")
+    #   self.sen.set_pose(lat=59.11, lon=17.22, alt=121, roll=0, pitch=47, yaw= 11)
+    #   pose = self.sen.get_pose()
+    #   print(f'The pose is \n{json.dumps(pose, indent=4)}')
+    # except dss.auxiliaries.exception.Nack as error:
+    #   _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
 
     # Connect to data subscribe socket
     self.setup_sen_data_stream()
@@ -324,32 +324,32 @@ class SensorTest():
     # Connect the subscribe socket
     self.setup_sen_info_stream()
 
-    # Subscribe to objectDetection data
-    self.sen.enable_data_stream('OD')
+    # # Subscribe to objectDetection data
+    # self.sen.enable_data_stream('OD')
 
-    # Enable cv_algorithm
-    self.sen.cv_algorithm('objectDetection', True)
-    time.sleep(10)
+    # # Enable cv_algorithm
+    # self.sen.cv_algorithm('objectDetection', True)
+    # time.sleep(10)
 
-    _idle = self.sen.get_idle()
-    print(_idle)
+    # _idle = self.sen.get_idle()
+    # print(_idle)
 
-    # Disable data stream
-    self.sen.disable_data_stream('OD')
-    time.sleep(1)
-    _idle = self.sen.get_idle()
-    print(_idle)
+    # # Disable data stream
+    # self.sen.disable_data_stream('OD')
+    # time.sleep(1)
+    # _idle = self.sen.get_idle()
+    # print(_idle)
 
-    # Enable an other data stream
-    self.sen.enable_data_stream('BB')
+    # # Enable an other data stream
+    # self.sen.enable_data_stream('BB')
 
-    # Change cv_algorithm
-    self.sen.cv_algorithm('boundingBox', True)
-    time.sleep(6)
+    # # Change cv_algorithm
+    # self.sen.cv_algorithm('boundingBox', True)
+    # time.sleep(6)
 
-    # Disable stream and cv_algorithm
-    self.sen.disable_data_stream('BB')
-    self.sen.cv_algorithm('boundingBox', False)
+    # # Disable stream and cv_algorithm
+    # self.sen.disable_data_stream('BB')
+    # self.sen.cv_algorithm('boundingBox', False)
 
     time.sleep(10)
 
