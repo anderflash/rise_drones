@@ -102,6 +102,8 @@ class PiCam():
     print('post capture_image')
     # Test to write image
     img.save('hardcoded2.jpg')
+    width, height = img.size
+    print(f'The size is {width}, {height}')
 
     # Bulid up meta, camera calibration and bounding box can be sent for example.
     # There is an old metadata def in the documentation for DSS_API, 2.5.1
