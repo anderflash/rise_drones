@@ -98,17 +98,17 @@ class PiCam():
     time.sleep(1)
     #pil_img = io.BytesIO()
     print('pre capture image')
-    img_array = self._cam.capture_array("main")
+    img = self._cam.capture_image("main")
     print('post capture_image')
     # Test to write image
-    Image.fromarray(img_array).save('hardcoded.jpg')
+    Image.frombytes(img).save('hardcoded2.jpg')
 
     # Bulid up meta, camera calibration and bounding box can be sent for example.
     # There is an old metadata def in the documentation for DSS_API, 2.5.1
     meta = {"index": 1, "filename": "hardcoded", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0}
     # Publish the image on the provided socket
 
-    self._data_publish(topic = "photo", meta=meta, img=img_array)
+    self._data_publish(topic = "photo", meta=meta, img=img)
     print('after publish')
 
   def task_cv_algorithm(self, algorithm):
