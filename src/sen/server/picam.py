@@ -82,9 +82,13 @@ class PiCam():
   def test_cam_get_focus(self):
     return 6
 
-  def download_photo(self, index, data_pub_socket):
+  def download_photo(self, index, resolution):
+    # Index can be used to download an already take picture. We take a new picture for now
+    _ = index
+    # Resolution can be used to scale or cut the image for example. We use current setting for now
+    _ = resolution
+
     # The code to take a photo
-    # img = self.cam.capture_image()
     img = self._cam.capture_image()
 
     # Bulid up meta, camera calibration and bounding box can be sent for example.

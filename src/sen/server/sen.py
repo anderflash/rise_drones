@@ -376,7 +376,7 @@ class Server:
           answer = dss.auxiliaries.zmq.ack(fcn)
           answer['description'] = 'download ' + 'index'
           # TODO, describe in documentation. Method uses base64
-          self._cam.download_photo(index, self._data_pub_socket)
+          self._cam.download_photo(index, resolution)
           answer = dss.auxiliaries.zmq.ack(fcn, 'Photo is published on data socket')
     return answer
 

@@ -319,6 +319,7 @@ class SensorTest():
 
     # Connect to data subscribe socket
     self.setup_sen_data_stream()
+    self.sen.photo_download(index=1, resolution='high')
 
     # Connect the subscribe socket
     self.setup_sen_info_stream()
