@@ -101,7 +101,7 @@ class PiCam():
     img = self._cam.capture_image("main")
     print('post capture_image')
     # Test to write image
-    Image.frombytes(img).save('hardcoded2.jpg')
+    img.save('hardcoded2.jpg')
 
     # Bulid up meta, camera calibration and bounding box can be sent for example.
     # There is an old metadata def in the documentation for DSS_API, 2.5.1

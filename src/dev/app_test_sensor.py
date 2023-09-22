@@ -241,8 +241,8 @@ class SensorTest():
           # img_array = dss.auxiliaries.zmq.bytes_to_numpy(img_bytes)
           img_bytes = str.encode(img_str)
           img = base64.decodebytes(img_bytes)
-
-          Image.frombytes(img).save('hardcoded.jpg')
+          # Image.frombytes(img).save('filemname')
+          img.save('hardcoded.jpg')
           print("image saved")
           photo_filename = msg['metadata']['filename']
           print("tva")
