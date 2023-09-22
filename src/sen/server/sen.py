@@ -346,6 +346,7 @@ class Server:
       answer = dss.auxiliaries.zmq.nack(fcn, 'Cmd faulty')
     # Accept
     else:
+      print('photo command accepted')
       if cmd == 'take_photo':
         answer = dss.auxiliaries.zmq.ack(fcn)
         answer['description'] = 'take_photo'
@@ -364,6 +365,7 @@ class Server:
         # TODO, enable/disable continous photo
         answer = dss.auxiliaries.zmq.nack(fcn, 'Continous photo not implemented')
       elif cmd == 'download':
+        print('command is download')
         resolution = msg['resolution']
         index = msg['index']
         # Test more nack reasons
@@ -373,10 +375,13 @@ class Server:
           answer = dss.auxiliaries.zmq.nack(fcn, 'Index string faulty' + index)
         # Accept
         else:
+          print('else')
           answer = dss.auxiliaries.zmq.ack(fcn)
           answer['description'] = 'download ' + 'index'
           # TODO, describe in documentation. Method uses base64
+          print('prior to download')
           self._cam.download_photo(index, resolution)
+          print('post download')
           answer = dss.auxiliaries.zmq.ack(fcn, 'Photo is published on data socket')
     return answer
 

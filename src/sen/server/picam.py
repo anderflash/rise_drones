@@ -89,8 +89,9 @@ class PiCam():
     _ = resolution
 
     # The code to take a photo
+    print('pre capture image')
     img = self._cam.capture_image()
-
+    print('post capture_image')
     # Bulid up meta, camera calibration and bounding box can be sent for example.
     # There is an old metadata def in the documentation for DSS_API, 2.5.1
     meta = {"index": 1, "filename": "hardcoded", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0}
