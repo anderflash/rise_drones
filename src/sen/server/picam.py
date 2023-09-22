@@ -8,6 +8,8 @@ import json
 from PIL import Image
 from picamera2 import Picamera2
 
+import numpy
+
 import dss.auxiliaries
 from dss.auxiliaries.config import config, config_path
 
@@ -98,7 +100,6 @@ class PiCam():
     print('pre capture image')
     img_array = self._cam.capture_array("main")
     print('post capture_image')
-
     # Test to write image
     Image.fromarray(img_array).save('hardcoded.jpg')
 

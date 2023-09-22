@@ -15,6 +15,7 @@ import dss.auxiliaries.exception
 import dss.auxiliaries.config
 from PIL import Image
 import pickle
+import numpy as np
 
 #--------------------------------------------------------------------#
 
@@ -186,6 +187,25 @@ def bytes_to_array_image(filename: str, data: bytes) -> None:
   print("post save")
   # with open(filename, "wb") as fh:
   #   pil_img.save(fh)
+
+def numpy_to_bytes(arr: np.array) -> str:
+    arr_dtype = bytearray(str(arr.dtype), 'utf-8')
+    arr_shape = bytearray(','.join([str(a) for a in arr.shape]), 'utf-8')
+    sep = bytearray('|', 'utf-8')
+    arr_bytes = arr.ravel().tobytes()
+    to_return = arr_dtype + sep + arr_shape + sep + arr_bytes
+    return to_return
+
+def bytes_to_numpy(serialized_arr: str) -> np.array:
+    sep = '|'.encode('utf-8')
+    i_0 = serialized_arr.find(sep)
+    i_1 = serialized_arr.find(sep, i_0 + 1)
+    arr_dtype = serialized_arr[:i_0].decode('utf-8')
+    arr_shape = tuple([int(a) for a in serialized_arr[i_0 + 1:i_1].decode('utf-8').split(',')])
+    arr_str = serialized_arr[i_1 + 1:]
+    arr = np.frombuffer(arr_str, dtype = arr_dtype).reshape(arr_shape)
+    return arr
+
 
 def save_json(filename: str, data: dict) -> None:
   with open(filename, "w") as fh:
@@ -437,17 +457,20 @@ class Pub(_Socket):
     _logger.debug(f'{self._label} %s\n', str(json_msg)[:256])
 
   def publish_base64(self, topic: str, meta: json, img) -> None:
+    img_bytes = numpy_to_bytes(img)
+    img_str = bytes_to_string(img_bytes)
+
     # Encode img using base64. Binary.
     # img_data = base64.b64encode(img)
     # str_data = img_data.decode('utf-8')
-    serialized = pickle.dumps(img)
+    #serialized = pickle.dumps(img)
 
 
     #data = image_to_bytes(img)
     # Serialize binary
     #img_as_string = bytes_to_string(data)
     # Construct message
-    msg = {"photo": serialized, "metadata": meta}
+    msg = {"photo": img_str, "metadata": meta}
     json_msg_as_string = mogrify(topic, msg)
     self._socket.send_string(json_msg_as_string)
     _logger.debug(f'{self._label} %s\n', str(meta)[:256])

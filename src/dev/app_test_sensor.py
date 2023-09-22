@@ -235,8 +235,11 @@ class SensorTest():
           # byte_array = base64.b64decode(data)
           # print("base64 decoded")
           # img_array = list[byte_array]
-          deserialized = pickle.loads(msg['photo'])
-          Image.fromarray(deserialized).save('hardcoded.jpg')
+          #deserialized = pickle.loads(msg['photo'])
+          img_str = msg['photo']
+          img_bytes = dss.auxiliaries.zmq.string_to_bytes(img_str)
+          img_array = dss.auxiliaries.zmq.bytes_to_numpy(img_bytes)
+          Image.fromarray(img_array).save('hardcoded.jpg')
           print("image saved")
           photo_filename = msg['metadata']['filename']
           print("tva")
