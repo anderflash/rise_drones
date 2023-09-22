@@ -100,7 +100,7 @@ class Server:
                       # 'get_state':          {'request': self._request_get_state,          'task': None},
                       # 'get_metadata':       {'request': self._request_get_metadata,       'task': None}, # Not implemented
 
-                      'photo':              {'request': self._request_photo,              'task': None}, # Not implemented
+                      'photo':              {'request': self._request_photo,              'task': self._task_photo, 'priority': 1}, # Not implemented
                      }
 
     # create initial task
@@ -375,14 +375,12 @@ class Server:
           answer = dss.auxiliaries.zmq.nack(fcn, 'Index string faulty' + index)
         # Accept
         else:
-          print('else')
+
           answer = dss.auxiliaries.zmq.ack(fcn)
-          answer['description'] = 'download ' + 'index'
-          # TODO, describe in documentation. Method uses base64
-          print('prior to download')
-          self._cam.download_photo(index, resolution)
-          print('post publish')
-          answer = dss.auxiliaries.zmq.ack(fcn, {"info": 'Photo is published on data socket'})
+          # answer['description'] = 'download ' + 'index'
+          # # TODO, describe in documentation. Method uses base64
+          # print('prior to download')
+          #
     return answer
 
   def _request_get_rtsp_url(self, msg) -> dict:
@@ -503,7 +501,11 @@ class Server:
       self._cam._abort_task = True
 
 
-
+  def _task_photo(self, msg):
+    if msg['cmd']=='download':
+      index = msg['cmd']['index']
+      resolution = msg['cmd']['resolution']
+      self._cam.download_photo(index, resolution)
 
   #############################################################################
   # CALLBACKS
