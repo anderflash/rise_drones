@@ -176,10 +176,15 @@ def bytes_to_image(filename: str, data: bytes) -> None:
   with open(filename, "wb") as fh:
     fh.write(base64.decodebytes(data))
 
-def bytes_to_pil_image(filename: str, data: bytes) -> None:
-  pil_img = Image(base64.decodebytes(data))
-  with open(filename, "wb") as fh:
-    pil_img.save(fh)
+def bytes_to_array_image(filename: str, data: bytes) -> None:
+  print("pre base64 decode")
+  img_array = base64.decodebytes(data)
+  print("pre save")
+  print(f'the filename is {filename}')
+  Image.fromarray(img_array).save('hardcoded.jpg')
+  print("post save")
+  # with open(filename, "wb") as fh:
+  #   pil_img.save(fh)
 
 def save_json(filename: str, data: dict) -> None:
   with open(filename, "w") as fh:

@@ -225,13 +225,17 @@ class SensorTest():
       try:
         (topic, msg) = data_socket.recv()
         if topic in ('photo', 'photo_low'):
+          print("ett")
           data = dss.auxiliaries.zmq.string_to_bytes(msg["photo"])
           photo_filename = msg['metadata']['filename']
-          pil_img = base64.decodebytes(data)
-          dss.auxiliaries.zmq.bytes_to_pil_image(photo_filename, data)
+          print("tva")
+          dss.auxiliaries.zmq.bytes_to_array_image(photo_filename, data)
+          print("tvafem")
           #dss.auxiliaries.zmq.bytes_to_image(photo_filename, data)
           json_filename = photo_filename[:-4] + ".json"
+          print("tvasex")
           dss.auxiliaries.zmq.save_json(json_filename, msg['metadata'])
+          print("tre")
           _logger.info("Photo saved to " + msg['metadata']['filename']  + "\r")
           _logger.info("Photo metadata saved to " + json_filename + "\r")
           self.transferred += 1

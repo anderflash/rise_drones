@@ -461,7 +461,7 @@ class Server:
 
 
   def _publisher_callback(self, topic, msg):
-    self._pub_socket.publish(topic, msg)
+    self._info_pub_socket.publish(topic, msg)
 
   # Function to handle if the link to the application is lost
   def _is_link_lost(self):
