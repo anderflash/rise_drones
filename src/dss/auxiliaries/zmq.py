@@ -14,8 +14,7 @@ import zmq
 import dss.auxiliaries.exception
 import dss.auxiliaries.config
 from PIL import Image
-import pickle
-import numpy as np
+
 
 #--------------------------------------------------------------------#
 

@@ -107,7 +107,7 @@ class PiCam():
 
     # Bulid up meta, camera calibration and bounding box can be sent for example.
     # There is an old metadata def in the documentation for DSS_API, 2.5.1
-    meta = {"index": 1, "filename": "hardcoded", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0}
+    meta = {"index": 1, "filename": "hardcoded.jpg", "x": 10, "y": 20, "z":30, "agl": -1, "heading":0, "width": width, "height": height}
     # Publish the image on the provided socket
 
     self._data_publish(topic = "photo", meta=meta, img=img.tobytes())

@@ -16,7 +16,6 @@ import time
 import traceback
 import base64
 from PIL import Image
-import pickle
 
 import sys
 import os
@@ -228,33 +227,13 @@ class SensorTest():
       try:
         (topic, msg) = data_socket.recv()
         if topic in ('photo', 'photo_low'):
-          print("ett")
-          #data = dss.auxiliaries.zmq.string_to_bytes(msg["photo"])
-          # data = str.encode(msg["photo"])
-          # print("ett")
-          # byte_array = base64.b64decode(data)
-          # print("base64 decoded")
-          # img_array = list[byte_array]
-          #deserialized = pickle.loads(msg['photo'])
-          img_str = msg['photo']
-          # img_bytes = dss.auxiliaries.zmq.string_to_bytes(img_str)
-          # img_array = dss.auxiliaries.zmq.bytes_to_numpy(img_bytes)
-          img_bytes = str.encode(img_str)
-          print('tva')
-          img = base64.decodebytes(img_bytes)
-          print('tre')
-          Image.frombytes(img).save('filename.jpg')
-          #img.save('hardcoded.jpg')
-          print("image saved")
           photo_filename = msg['metadata']['filename']
-          print("tva")
-          #dss.auxiliaries.zmq.bytes_to_array_image(photo_filename, data)
-          print("tvafem")
-          #dss.auxiliaries.zmq.bytes_to_image(photo_filename, data)
+          img_str = msg['photo']
+          img_encoded_bytes = str.encode(img_str)
+          img_bytes = base64.decodebytes(img_encoded_bytes)
+          Image.frombytes('RGB', (msg['meta']['height'], msg['meta']['width']), img_bytes).save(photo_filename)
           json_filename = photo_filename[:-4] + ".json"
-          print("tvasex")
           dss.auxiliaries.zmq.save_json(json_filename, msg['metadata'])
-          print("tre")
           _logger.info("Photo saved to " + msg['metadata']['filename']  + "\r")
           _logger.info("Photo metadata saved to " + json_filename + "\r")
           self.transferred += 1
