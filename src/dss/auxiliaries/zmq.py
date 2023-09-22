@@ -169,7 +169,7 @@ def image_to_bytes(img) -> bytes:
   return data
 
 def bytes_to_string(data: bytes) -> str:
-  return data.decode('utf-8')
+  return data.decode('utf-8').strip()
 
 def string_to_bytes(data: str) -> bytes:
   return str.encode(data)
