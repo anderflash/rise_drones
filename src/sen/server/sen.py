@@ -381,8 +381,8 @@ class Server:
           # TODO, describe in documentation. Method uses base64
           print('prior to download')
           self._cam.download_photo(index, resolution)
-          print('post download')
-          answer = dss.auxiliaries.zmq.ack(fcn, 'Photo is published on data socket')
+          print('post publish')
+          answer = dss.auxiliaries.zmq.ack(fcn, {"info": 'Photo is published on data socket'})
     return answer
 
   def _request_get_rtsp_url(self, msg) -> dict:
