@@ -13,6 +13,7 @@ import zmq
 
 import dss.auxiliaries.exception
 import dss.auxiliaries.config
+from PIL import Image
 
 #--------------------------------------------------------------------#
 
@@ -174,6 +175,11 @@ def string_to_bytes(data: str) -> bytes:
 def bytes_to_image(filename: str, data: bytes) -> None:
   with open(filename, "wb") as fh:
     fh.write(base64.decodebytes(data))
+
+def bytes_to_pil_image(filename: str, data: bytes) -> None:
+  pil_img = Image(base64.decodebytes(data))
+  with open(filename, "wb") as fh:
+    pil_img.save(fh)
 
 def save_json(filename: str, data: dict) -> None:
   with open(filename, "w") as fh:

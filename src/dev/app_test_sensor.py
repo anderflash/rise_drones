@@ -227,7 +227,9 @@ class SensorTest():
         if topic in ('photo', 'photo_low'):
           data = dss.auxiliaries.zmq.string_to_bytes(msg["photo"])
           photo_filename = msg['metadata']['filename']
-          dss.auxiliaries.zmq.bytes_to_image(photo_filename, data)
+          pil_img = base64.decodebytes(data)
+          dss.auxiliaries.zmq.bytes_to_pil_image(photo_filename, data)
+          #dss.auxiliaries.zmq.bytes_to_image(photo_filename, data)
           json_filename = photo_filename[:-4] + ".json"
           dss.auxiliaries.zmq.save_json(json_filename, msg['metadata'])
           _logger.info("Photo saved to " + msg['metadata']['filename']  + "\r")
