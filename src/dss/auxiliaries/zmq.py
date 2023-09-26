@@ -156,9 +156,6 @@ def demogrify(msg: str) -> typing.Tuple[str, dict]:
 
   return topic, message
 
-def image_to_bytes(img) -> bytes:
-  data = base64.b64encode(img)
-  return data
 
 def bytes_to_string(data: bytes) -> str:
   return data.decode('utf-8')
