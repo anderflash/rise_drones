@@ -14,6 +14,8 @@ import logging
 import threading
 import time
 import traceback
+import base64
+from PIL import Image
 
 import sys
 import os
@@ -173,12 +175,12 @@ class SensorTest():
 
 #--------------------------------------------------------------------#
 # Setup the SEN info stream thread
-  def setup_sen_info_stream(self, timestamp):
+  def setup_sen_info_stream(self):
     #Get info port from SEN
     info_port = self.sen.get_port('info_pub_port')
     if info_port:
       self._sen_info_thread = threading.Thread(
-        target=self._main_info_sen, args=[self.sen._sen.ip, info_port, timestamp])
+        target=self._main_info_sen, args=[self.sen._sen.ip, info_port])
       self._sen_info_thread_active = True
       self._sen_info_thread.start()
 
@@ -195,7 +197,7 @@ class SensorTest():
 
 #--------------------------------------------------------------------#
 # The main function for subscribing to info messages from the SEN.
-  def _main_info_sen(self, ip, port, timestamp):
+  def _main_info_sen(self, ip, port):
     # Create info socket and start listening thread
     info_socket = dss.auxiliaries.zmq.Sub(_context, ip, port, "info " + self.crm.app_id)
     while self._sen_info_thread_active:
@@ -225,12 +227,14 @@ class SensorTest():
       try:
         (topic, msg) = data_socket.recv()
         if topic in ('photo', 'photo_low'):
-          data = dss.auxiliaries.zmq.string_to_bytes(msg["photo"])
           photo_filename = msg['metadata']['filename']
-          dss.auxiliaries.zmq.bytes_to_image(photo_filename, data)
+          img_str = msg['photo']
+          img_data = str.encode(img_str)
+          img_bytes = base64.decodebytes(img_data)
+          Image.frombytes('RGB', (msg['metadata']['width'], msg['metadata']['height']), img_bytes).save(photo_filename)
           json_filename = photo_filename[:-4] + ".json"
           dss.auxiliaries.zmq.save_json(json_filename, msg['metadata'])
-          _logger.info("Photo saved to " + msg['metadata']['filename']  + "\r")
+          _logger.info("Photo saved to " + photo_filename  + "\r")
           _logger.info("Photo metadata saved to " + json_filename + "\r")
           self.transferred += 1
         else:
@@ -317,10 +321,12 @@ class SensorTest():
     except dss.auxiliaries.exception.Nack as error:
       _logger.warning(f'{error.fcn} returned nack with description {error.msg}')
 
-
+    # Connect to data subscribe socket
+    self.setup_sen_data_stream()
+    self.sen.photo_download(index=1, resolution='high')
+    time.sleep(5)
     # Connect the subscribe socket
-    timestamp = time.strftime('%Y%m%d_%H%M%S')
-    self.setup_sen_info_stream(timestamp)
+    self.setup_sen_info_stream()
 
     # Subscribe to objectDetection data
     self.sen.enable_data_stream('OD')

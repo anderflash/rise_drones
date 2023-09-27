@@ -60,11 +60,14 @@ class Server:
 
     # We will connect to crm, set random ports within range.
     self._serv_socket = dss.auxiliaries.zmq.Rep(self._zmq_context, port=app_port, label='sen', min_port=crm_port+1, max_port=crm_port+49)
-    self._pub_socket = dss.auxiliaries.zmq.Pub(self._zmq_context, port=None, min_port=crm_port+1, max_port=crm_port+50, label='info')
-    self._logger.info('Starting pub server on %d... done', self._pub_socket.port)
+    self._info_pub_socket = dss.auxiliaries.zmq.Pub(self._zmq_context, port=None, min_port=crm_port+1, max_port=crm_port+50, label='info')
+    self._data_pub_socket = dss.auxiliaries.zmq.Pub(self._zmq_context, port=None, min_port=crm_port+1, max_port=crm_port+50, label='data')
+    self._logger.info('Starting info pub server on %d... done', self._info_pub_socket.port)
+    self._logger.info('Starting data pub server on %d... done', self._data_pub_socket.port)
+
 
     if camera == 'picam':
-      self._cam = sen.server.PiCam(publish_method = self._pub_socket.publish)
+      self._cam = sen.server.PiCam(self._info_pub_socket.publish, self._data_pub_socket.publish_base64)
       self._logger.info('Initiating PiCam..')
 
     # Publish attributes
@@ -97,7 +100,7 @@ class Server:
                       # 'get_state':          {'request': self._request_get_state,          'task': None},
                       # 'get_metadata':       {'request': self._request_get_metadata,       'task': None}, # Not implemented
 
-                      'photo':              {'request': self._request_photo,              'task': None}, # Not implemented
+                      'photo':              {'request': self._request_photo,              'task': self._task_photo, 'priority': 1}, # Not implemented
                      }
 
     # create initial task
@@ -189,7 +192,7 @@ class Server:
   def _request_get_info(self, msg) -> dict:
     fcn = dss.auxiliaries.zmq.get_fcn(msg)
     # No nack reasons, accept
-    answer = dss.auxiliaries.zmq.ack(fcn, {'info_pub_port': self._pub_socket.port, 'data_pub_port': '', 'id': self._sen_id})
+    answer = dss.auxiliaries.zmq.ack(fcn, {'info_pub_port': self._info_pub_socket.port, 'data_pub_port': self._data_pub_socket.port, 'id': self._sen_id})
     return answer
 
   def _request_get_cam_cal(self, msg) -> dict:
@@ -343,6 +346,7 @@ class Server:
       answer = dss.auxiliaries.zmq.nack(fcn, 'Cmd faulty')
     # Accept
     else:
+      print('photo command accepted')
       if cmd == 'take_photo':
         answer = dss.auxiliaries.zmq.ack(fcn)
         answer['description'] = 'take_photo'
@@ -361,19 +365,22 @@ class Server:
         # TODO, enable/disable continous photo
         answer = dss.auxiliaries.zmq.nack(fcn, 'Continous photo not implemented')
       elif cmd == 'download':
+        print('command is download')
         resolution = msg['resolution']
         index = msg['index']
         # Test more nack reasons
         if False:
-          anser = dss.auxiliaries.zmq.nack(fcn, 'Index out of range' + index)
+          answer = dss.auxiliaries.zmq.nack(fcn, 'Index out of range' + index)
         elif False:
-          anser = dss.auxiliaries.zmq.nack(fcn, 'Index string faulty' + index)
+          answer = dss.auxiliaries.zmq.nack(fcn, 'Index string faulty' + index)
         # Accept
         else:
+
           answer = dss.auxiliaries.zmq.ack(fcn)
-          answer['description'] = 'download ' + 'index'
-          # TODO, download photo
-          answer = dss.auxiliaries.zmq.nack(fcn, 'Download photo not implemented')
+          # answer['description'] = 'download ' + 'index'
+          # # TODO, describe in documentation. Method uses base64
+          # print('prior to download')
+          #
     return answer
 
   def _request_get_rtsp_url(self, msg) -> dict:
@@ -454,7 +461,7 @@ class Server:
 
 
   def _publisher_callback(self, topic, msg):
-    self._pub_socket.publish(topic, msg)
+    self._info_pub_socket.publish(topic, msg)
 
   # Function to handle if the link to the application is lost
   def _is_link_lost(self):
@@ -484,17 +491,21 @@ class Server:
   #############################################################################
   # Task computer vision algorithm
   def _task_cv_algorithm(self, msg):
-    algortihm = msg['algorithm']
+    algorithm = msg['algorithm']
     enable = msg['enable']
     if enable:
       # method task_cv_algorithm runs a loop until abort task
-      self._cam.task_cv_algorithm(algortihm)
+      self._cam.task_cv_algorithm(algorithm)
     else:
       # The task is the running task since the request is acked. Abort task
       self._cam._abort_task = True
 
 
-
+  def _task_photo(self, msg):
+    if msg['cmd']=='download':
+      index = msg['index']
+      resolution = msg['resolution']
+      self._cam.download_photo(index, resolution)
 
   #############################################################################
   # CALLBACKS

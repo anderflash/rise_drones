@@ -374,7 +374,7 @@ class Client:
 
   # Photo download
   def photo_download(self, index, resolution):
-    self._sen.photo('download', resolution, index)
+    self._sen.photo('download', index=index, resolution=resolution)
 
   # Photo recording
   def photo_rec(self, enable):

@@ -86,7 +86,7 @@ function call.
   {
     "fcn": "ack",
     "arg": "the_name_of_the_function",
-    ["arg2": JSON-object with information]
+    "arg2": ["JSON-object with information"]
   }
 
   {
